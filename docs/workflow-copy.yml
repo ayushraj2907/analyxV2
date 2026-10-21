@@ -1,0 +1,72 @@
+# COPY of .github/workflows/update-and-deploy.yml (visible copy for uploading via the GitHub website - see docs/PUBLISHING_GUIDE.md step 5)
+name: Update data and publish
+
+on:
+  schedule:
+    # 18:15 UTC = 23:45 IST, every day (after AMFI publishes the day's NAVs)
+    - cron: "15 18 * * *"
+  workflow_dispatch:
+    inputs:
+      full_refresh:
+        description: "Re-download every fund's full NAV history (slower)"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths: ["app/**", "config/**", "pipeline/**", ".github/workflows/**"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore NAV history cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/history
+          key: nav-history-${{ github.run_id }}
+          restore-keys: nav-history-
+
+      - name: Unit tests (formulas, parsing, no hardcoded numbers)
+        run: |
+          pip install --quiet pytest
+          python -m pytest -q tests/test_pipeline.py
+          node --test tests/js/app.test.mjs
+
+      - name: Build site and data
+        run: |
+          FLAG=""
+          if [ "$(date -u +%u)" = "7" ] || [ "${{ inputs.full_refresh }}" = "true" ]; then FLAG="--full-refresh"; fi
+          python pipeline/build_site.py --out _site $FLAG
+
+      - name: Check built data (list and detail identical, sources present)
+        run: SITE_DIR=_site python -m pytest -q tests/test_pipeline.py -k "identical or source"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

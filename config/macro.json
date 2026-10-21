@@ -1,0 +1,19 @@
+{
+  "_about": "Update these two values once a month (see docs/PUBLISHING_GUIDE.md, step 9). Rates are in percent per year.",
+  "inflation": {
+    "value": 5.54,
+    "label": "CPI (Combined) year-on-year inflation",
+    "period": "September 2026",
+    "source_name": "MoSPI CPI press release (12 Oct 2026)",
+    "source_url": "https://www.mospi.gov.in/uploads/latestreleasesfiles/1791801549227-Press%20Release%20for%20the%20month%20of%20September,%202026.pdf",
+    "updated_on": "2026-10-21"
+  },
+  "risk_free_rate": {
+    "value": 5.73,
+    "label": "91-day Treasury Bill cut-off yield",
+    "period": "Auction of 14 Oct 2026",
+    "source_name": "Business Standard report on RBI T-bill auctions (21 Oct 2026)",
+    "source_url": "https://www.business-standard.com/economy/news/rbi-rejects-all-bids-at-treasury-bill-auction-as-short-term-yields-surge-126102101191_1.html",
+    "updated_on": "2026-10-21"
+  }
+}

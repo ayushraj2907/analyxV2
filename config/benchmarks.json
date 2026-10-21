@@ -1,0 +1,54 @@
+{
+  "_about": "Benchmarks are the NAV of a real Direct-Growth index fund that tracks the index (from the same AMFI/mfapi source as the funds). The pipeline picks the longest-running matching fund automatically. 'match' and 'exclude' are case-insensitive regular expressions on the scheme name.",
+  "indices": {
+    "nifty50": {
+      "name": "Nifty 50",
+      "match": "nifty\\s?50\\s+index\\s+fund",
+      "exclude": "elss|next|equal|plus|g-sec|value|arbitrage|sdl|shariah"
+    },
+    "nifty100": {
+      "name": "Nifty 100",
+      "match": "nifty\\s?100\\s+index\\s+fund",
+      "exclude": "equal|low\\s?vol|quality|alpha|esg|plus|g-sec"
+    },
+    "nifty500": {
+      "name": "Nifty 500",
+      "match": "nifty\\s?500\\s+index\\s+fund",
+      "exclude": "momentum|value|quality|equal|multicap|multi\\s?cap|low\\s?vol|plus|g-sec|shariah|esg|flexicap"
+    },
+    "midcap150": {
+      "name": "Nifty Midcap 150",
+      "match": "nifty\\s?midcap\\s?150\\s+index\\s+fund",
+      "exclude": "momentum|quality|value|equal|plus|g-sec"
+    },
+    "smallcap250": {
+      "name": "Nifty Smallcap 250",
+      "match": "nifty\\s?smallcap\\s?250\\s+index\\s+fund",
+      "exclude": "momentum|quality|value|equal|plus|g-sec"
+    },
+    "largemid250": {
+      "name": "Nifty LargeMidcap 250",
+      "match": "nifty\\s?large\\s?mid\\s?cap\\s?250\\s+index\\s+fund",
+      "exclude": "elss|plus|g-sec|momentum|quality|equal"
+    },
+    "gold": {
+      "name": "Gold (INR)",
+      "match": "gold\\s+(savings\\s+)?fund|gold\\s+etf\\s+fo?f",
+      "exclude": "overseas|world|mining|international|silver"
+    }
+  },
+  "category_benchmark": {
+    "Large Cap": "nifty100",
+    "Large & Mid Cap": "largemid250",
+    "Mid Cap": "midcap150",
+    "Small Cap": "smallcap250",
+    "Flexi Cap": "nifty500",
+    "Multi Cap": "nifty500",
+    "ELSS": "nifty500",
+    "Focused": "nifty500",
+    "Value": "nifty500",
+    "Contra": "nifty500",
+    "Dividend Yield": "nifty500"
+  },
+  "cards": ["nifty50", "nifty500", "midcap150", "smallcap250", "gold"]
+}

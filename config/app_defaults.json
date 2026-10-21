@@ -1,0 +1,12 @@
+{
+  "_about": "Starting values for the form. expected_return_pct is the user's own assumption for the corpus projection, not a prediction or market figure.",
+  "goal": "Wealth Creation",
+  "risk": "Moderate",
+  "age_group": "31-45",
+  "type": "SIP",
+  "sip_amount": 10000,
+  "lumpsum_amount": 500000,
+  "horizon_years": 10,
+  "expected_return_pct": 10,
+  "report_email": ""
+}

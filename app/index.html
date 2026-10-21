@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Analyx — Mutual Fund Finder</title>
+<meta name="description" content="Find well-ranked Indian mutual funds for your goal, using official AMFI data. Hindi and English, with voice.">
+<meta name="theme-color" content="#0b1220">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Analyx">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<script>
+  try { var th = localStorage.getItem('analyx-theme'); if (th) document.documentElement.dataset.theme = th; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand">
+      <img src="icons/icon-192.png" alt="" width="34" height="34">
+      <div>
+        <div class="brand-name">Analyx</div>
+        <div class="brand-sub" data-i18n="tagline">Mutual fund finder · official AMFI data</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="chip-btn" id="install-btn" hidden data-i18n="install">Install app</button>
+      <button class="chip-btn" id="lang-btn" aria-label="Switch language"><span data-i18n="langSwitch">हिंदी</span></button>
+      <button class="icon-btn" id="theme-btn" aria-label="Toggle dark or light theme" data-i18n-aria="themeToggle">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div id="banner" class="banner" hidden role="status"></div>
+<div id="ios-tip" class="banner tip" hidden>
+  <span data-i18n="iosInstallTip">On iPhone: tap the Share button, then “Add to Home Screen”.</span>
+  <button class="link-btn" id="ios-tip-close" data-i18n="close">Close</button>
+</div>
+
+<main id="main" class="wrap">
+
+  <section class="hero">
+    <h1 data-i18n="heroTitle">Find funds that fit your goal</h1>
+    <p data-i18n="heroSub">Tell us your goal, risk comfort and time frame. We rank Direct-Growth funds within each SEBI category using official NAV data, and show where every number comes from.</p>
+  </section>
+
+  <section class="card input-card" aria-labelledby="input-title">
+    <h2 id="input-title" class="sr-only" data-i18n="inputTitle">Your details</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" class="tab" id="tab-form" aria-selected="true" aria-controls="panel-form" data-i18n="tabForm">Choose</button>
+      <button role="tab" class="tab" id="tab-text" aria-selected="false" aria-controls="panel-text" data-i18n="tabText">Describe in words</button>
+      <button role="tab" class="tab" id="tab-voice" aria-selected="false" aria-controls="panel-voice" data-i18n="tabVoice">Speak</button>
+    </div>
+
+    <!-- FORM -->
+    <div role="tabpanel" id="panel-form" class="panel">
+      <form id="profile-form" novalidate>
+        <fieldset>
+          <legend data-i18n="goal">Goal</legend>
+          <div class="opts" data-field="goal">
+            <button type="button" data-value="Wealth Creation" data-i18n="goal.Wealth Creation">Grow wealth</button>
+            <button type="button" data-value="Retirement" data-i18n="goal.Retirement">Retirement</button>
+            <button type="button" data-value="Child Education" data-i18n="goal.Child Education">Child's education</button>
+            <button type="button" data-value="Tax Saving" data-i18n="goal.Tax Saving">Save tax (ELSS)</button>
+            <button type="button" data-value="Emergency Fund" data-i18n="goal.Emergency Fund">Emergency fund</button>
+            <button type="button" data-value="Short Term" data-i18n="goal.Short Term">Short term</button>
+          </div>
+        </fieldset>
+
+        <div class="grid-2">
+          <fieldset>
+            <legend data-i18n="risk">Risk comfort</legend>
+            <div class="opts" data-field="risk">
+              <button type="button" data-value="Conservative" data-i18n="risk.Conservative">Low</button>
+              <button type="button" data-value="Moderate" data-i18n="risk.Moderate">Medium</button>
+              <button type="button" data-value="Aggressive" data-i18n="risk.Aggressive">High</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend data-i18n="age">Your age</legend>
+            <div class="opts" data-field="age_group">
+              <button type="button" data-value="18-30">18–30</button>
+              <button type="button" data-value="31-45">31–45</button>
+              <button type="button" data-value="46-55">46–55</button>
+              <button type="button" data-value="55+">55+</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset>
+          <legend data-i18n="investType">How you'll invest</legend>
+          <div class="opts" data-field="type">
+            <button type="button" data-value="SIP" data-i18n="type.SIP">Monthly SIP</button>
+            <button type="button" data-value="Lumpsum" data-i18n="type.Lumpsum">One-time (lump sum)</button>
+          </div>
+        </fieldset>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="amount" id="amount-label" data-i18n="amountSip">Monthly amount (₹)</label>
+            <input id="amount" type="text" inputmode="numeric" autocomplete="off">
+            <div class="hint" id="amount-words"></div>
+          </div>
+          <div class="field">
+            <label for="horizon"><span data-i18n="horizon">Time frame</span>: <strong id="horizon-out"></strong></label>
+            <input id="horizon" type="range" min="1" max="40" step="1">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="ret"><span data-i18n="assumedReturn">Assumed yearly return</span>: <strong id="ret-out"></strong></label>
+            <input id="ret" type="range" min="1" max="20" step="0.5">
+            <div class="hint" data-i18n="assumedReturnHint">Your own assumption for the projection — not a prediction.</div>
+          </div>
+          <div class="field">
+            <label for="inf"><span data-i18n="inflation">Inflation</span>: <strong id="inf-out"></strong></label>
+            <input id="inf" type="range" min="0" max="12" step="0.01">
+            <div class="hint" id="inf-source"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="primary" id="find-btn" data-i18n="findFunds">Find my top funds</button>
+      </form>
+    </div>
+
+    <!-- TEXT -->
+    <div role="tabpanel" id="panel-text" class="panel" hidden>
+      <label for="free-text" class="field-label" data-i18n="describeLabel">Describe what you want, in English, Hindi or Hinglish</label>
+      <textarea id="free-text" rows="3" data-i18n-placeholder="describePlaceholder" placeholder="e.g. SIP of ₹10,000 a month for 20 years, medium risk, I am 32"></textarea>
+      <div class="examples" id="examples"></div>
+      <button class="primary" id="parse-btn" data-i18n="readDetails">Read my details</button>
+      <div class="confirm" id="text-confirm" hidden></div>
+    </div>
+
+    <!-- VOICE -->
+    <div role="tabpanel" id="panel-voice" class="panel" hidden>
+      <div id="voice-supported">
+        <p class="muted" data-i18n="voiceIntro">Tap the mic and say your goal, amount, time frame, risk and age. Speak in the language selected at the top.</p>
+        <div class="mic-row">
+          <button class="mic" id="mic-btn" aria-pressed="false" data-i18n-aria="micLabel" aria-label="Start or stop listening">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>
+          </button>
+          <div class="mic-status" id="mic-status" aria-live="polite"></div>
+        </div>
+        <label for="voice-text" class="field-label" data-i18n="transcript">What we heard (you can edit it)</label>
+        <textarea id="voice-text" rows="3"></textarea>
+        <button class="primary" id="voice-parse-btn" data-i18n="readDetails">Read my details</button>
+        <div class="confirm" id="voice-confirm" hidden></div>
+      </div>
+      <div id="voice-unsupported" class="notice" hidden data-i18n="voiceUnsupported">Voice input isn't supported in this browser. Please use Chrome or Edge, or type in “Describe in words”.</div>
+    </div>
+  </section>
+
+  <section id="results" hidden aria-live="polite">
+    <div class="results-head">
+      <h2 data-i18n="resultsTitle">Your top funds</h2>
+      <button class="listen" id="listen-summary"><span aria-hidden="true">🔊</span> <span data-i18n="listen">Listen</span></button>
+    </div>
+    <div class="card summary" id="summary"></div>
+
+    <div class="grid-results">
+      <div class="card" id="corpus-card"></div>
+      <div class="card" id="explain-card"></div>
+    </div>
+
+    <div id="fund-list" class="fund-list"></div>
+    <p class="muted small" id="results-source"></p>
+  </section>
+
+  <section class="bench" aria-labelledby="bench-title">
+    <h2 id="bench-title" data-i18n="benchTitle">Market benchmarks</h2>
+    <p class="muted small" data-i18n="benchSub">Measured from the NAV of a real index fund that tracks each index, so the numbers include that fund's small costs.</p>
+    <div class="bench-grid" id="bench-grid"></div>
+  </section>
+
+  <section class="about card" aria-labelledby="about-title">
+    <h2 id="about-title" data-i18n="aboutTitle">Where the numbers come from</h2>
+    <div id="about-body"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="disclaimer" data-i18n="disclaimer">Analyx is a decision-support tool, not investment advice, and is not registered with SEBI. Past returns do not guarantee future returns. Mutual fund investments are subject to market risks; read all scheme documents carefully and consult a SEBI-registered adviser before investing.</p>
+    <p class="small"><a id="report-link" href="#" target="_blank" rel="noopener" data-i18n="report">Report a problem</a></p>
+  </div>
+</footer>
+
+<!-- Fund detail sheet -->
+<div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+  <div class="sheet-head">
+    <h2 id="sheet-title" class="proper"></h2>
+    <button class="icon-btn" id="sheet-close" aria-label="Close" data-i18n-aria="close">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+</section>
+
+<!-- Speech player -->
+<div class="player" id="player" hidden role="region" aria-label="Read-aloud controls">
+  <button class="icon-btn" id="pl-toggle" aria-label="Pause" data-i18n-aria="pause">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path id="pl-icon" fill="currentColor" d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+  </button>
+  <button class="icon-btn" id="pl-stop" aria-label="Stop" data-i18n-aria="stop">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M6 6h12v12H6z"/></svg>
+  </button>
+  <label class="speed"><span data-i18n="speed">Speed</span>
+    <select id="pl-rate">
+      <option value="0.8">0.8×</option>
+      <option value="0.9">0.9×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.1">1.1×</option>
+      <option value="1.2">1.2×</option>
+    </select>
+  </label>
+  <span class="pl-note" id="pl-note"></span>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

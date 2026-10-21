@@ -1,0 +1,51 @@
+{
+  "_about": "Which SEBI categories are considered for each goal and risk level. Edit with care. Category names must match pipeline/categories.py.",
+  "goals": {
+    "Wealth Creation": {
+      "Conservative": ["Large Cap", "Flexi Cap", "Balanced Advantage"],
+      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Multi Cap"],
+      "Aggressive": ["Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Large & Mid Cap"]
+    },
+    "Retirement": {
+      "Conservative": ["Large Cap", "Balanced Advantage", "Conservative Hybrid", "Large & Mid Cap"],
+      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Balanced Advantage", "Multi Cap"],
+      "Aggressive": ["Mid Cap", "Flexi Cap", "Large & Mid Cap", "Multi Cap", "Small Cap"]
+    },
+    "Child Education": {
+      "Conservative": ["Large Cap", "Flexi Cap", "Balanced Advantage", "Conservative Hybrid"],
+      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Balanced Advantage"],
+      "Aggressive": ["Mid Cap", "Flexi Cap", "Large & Mid Cap", "Multi Cap"]
+    },
+    "Tax Saving": {
+      "Conservative": ["ELSS"],
+      "Moderate": ["ELSS"],
+      "Aggressive": ["ELSS"]
+    },
+    "Emergency Fund": {
+      "Conservative": ["Liquid", "Overnight"],
+      "Moderate": ["Liquid", "Overnight", "Ultra Short Duration"],
+      "Aggressive": ["Liquid", "Ultra Short Duration"]
+    },
+    "Short Term": {
+      "Conservative": ["Liquid", "Ultra Short Duration", "Low Duration"],
+      "Moderate": ["Low Duration", "Short Duration", "Ultra Short Duration"],
+      "Aggressive": ["Short Duration", "Low Duration", "Corporate Bond", "Banking and PSU"]
+    }
+  },
+  "age_55_plus": {
+    "_about": "Fixed 55+ rule: drop mid/small cap for everyone; conservative investors also drop other pure-equity categories and get hybrids instead. Tax Saving stays ELSS (the only tax-saving category).",
+    "remove_always": ["Small Cap", "Mid Cap"],
+    "remove_if_conservative": ["Flexi Cap", "Large & Mid Cap", "Multi Cap"],
+    "add_if_conservative": ["Balanced Advantage", "Conservative Hybrid"],
+    "fallback": ["Balanced Advantage", "Conservative Hybrid", "Large Cap"],
+    "exempt_goals": ["Tax Saving", "Emergency Fund", "Short Term"]
+  },
+  "horizon": {
+    "_about": "Short horizons override the goal table (except Tax Saving, which shows a lock-in warning instead).",
+    "max_1_year": ["Liquid", "Overnight"],
+    "max_3_years": ["Liquid", "Ultra Short Duration", "Low Duration", "Short Duration"],
+    "exempt_goals": ["Tax Saving", "Emergency Fund"]
+  },
+  "top_n": 10,
+  "max_per_fund_house": 2
+}
