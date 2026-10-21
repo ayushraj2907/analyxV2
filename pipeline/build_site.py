@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from amfi import parse_navall  # noqa: E402
 from metrics import compute_all, remove_bad_ticks, downsample, history_years, period_return  # noqa: E402
 from mfapi import get_history, reconcile_with_amfi  # noqa: E402
+from amfi_history import official_points, merge as merge_official  # noqa: E402
 from ranking import rank_category  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -113,6 +114,7 @@ def main():
     ap.add_argument("--full-refresh", action="store_true", help="ignore the cache, re-download every history")
     ap.add_argument("--limit", type=int, default=0, help="only process N funds (for quick local tests)")
     ap.add_argument("--workers", type=int, default=10)
+    ap.add_argument("--amfi-cache", default=os.path.join(ROOT, ".cache", "amfi"))
     args = ap.parse_args()
 
     now = datetime.now(IST)
@@ -122,6 +124,10 @@ def main():
     macro = load_json("macro.json")
     bcfg = load_json("benchmarks.json")
     rf = float(macro["risk_free_rate"]["value"])
+    for k in ("inflation", "risk_free_rate"):
+        upd = datetime.fromisoformat(macro[k]["updated_on"]).date()
+        if (now.date() - upd).days > 45:
+            print(f"WARNING: config/macro.json {k} was last updated on {upd}; please update it (see the guide)")
     warnings = []
 
     copy_app(args.out)
@@ -196,6 +202,25 @@ def main():
     if notes:
         warnings.append(f"{len(notes)} schemes: mfapi NAV differed from AMFI on the latest date; AMFI value used")
 
+    # ---- 2b. fill gaps from AMFI's official history (start dates + month-ends) ----
+    try:
+        official, failed_windows = official_points(latest, list(histories), args.amfi_cache, today, log)
+        if failed_windows:
+            warnings.append(f"{len(failed_windows)} AMFI history windows could not be downloaded; the independent check decides whether data is published")
+            log("WARNING:", failed_windows[:3])
+        added = replaced = 0
+        for code in list(histories):
+            if code in official:
+                histories[code], a_, r_ = merge_official(histories[code], official[code], to_fetch[code]["date"])
+                added += a_; replaced += r_
+        log(f"AMFI official history merged: {added} missing NAVs added, {replaced} values corrected")
+        if added or replaced:
+            warnings.append(f"Filled {added} NAVs missing from mfapi.in and corrected {replaced} values using AMFI's official history")
+    except RuntimeError as e:
+        problems_amfi = str(e)
+        warnings.append(f"AMFI official history unavailable ({problems_amfi}); returns of Liquid/Overnight funds may be off by a day")
+        log("WARNING:", problems_amfi)
+
     # ---- 3. resolve benchmarks (longest-running matching index fund) ----
     bench = {}
     for key, cands in bench_candidates.items():
@@ -240,6 +265,13 @@ def main():
         })
     if bad_ticks:
         warnings.append(f"Removed {bad_ticks} one-day NAV spikes that fully reversed next day (data errors)")
+
+    # save the exact series used, so tests/verify_independent.py checks identical inputs
+    final_dir = args.cache.rstrip("/\\") + "_final"
+    os.makedirs(final_dir, exist_ok=True)
+    for code in [f["code"] for f in funds] + [b["scheme_code"] for b in bench.values()]:
+        with open(os.path.join(final_dir, f"{code}.json"), "w", encoding="utf-8") as fh:
+            json.dump({"code": code, "data": [[d.isoformat(), v] for d, v in histories[code]]}, fh, separators=(",", ":"))
 
     # de-duplicate the same fund listed under two codes (keep the longest history)
     seen = {}

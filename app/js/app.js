@@ -23,11 +23,12 @@ async function getJSON(path) {
 }
 
 async function loadData() {
-  const [rules, defaults] = await Promise.all([getJSON('config/profile_rules.json'), getJSON('config/app_defaults.json')]);
-  S.rules = rules; S.defaults = defaults;
+  const [rules, defaults, scoring] = await Promise.all([getJSON('config/profile_rules.json'), getJSON('config/app_defaults.json'), getJSON('config/scoring.json')]);
+  S.rules = rules; S.defaults = defaults; S.scoring = scoring;
   try {
     const [meta, funds, bench] = await Promise.all([getJSON('data/meta.json'), getJSON('data/funds.json'), getJSON('data/benchmarks.json')]);
     S.meta = meta; S.funds = funds.funds; S.cards = bench.cards;
+    S.verified = await getJSON('data/verification.json').catch(() => null);
   } catch (e) {
     S.dataError = true;
   }
@@ -266,7 +267,8 @@ function runSearch() {
   if (S.dataError || !S.funds.length) { alertNote(t('dataMissing')); return; }
   if (!S.profile.amount || S.profile.amount < 100) { alertNote(t('enterAmount')); $('#amount').focus(); return; }
   const { categories, notes } = categoriesFor(S.profile, S.rules);
-  const { top, poolSize } = pickTop(S.funds, categories, S.rules);
+  const { top, poolSize, youngSkipped } = pickTop(S.funds, categories, S.rules, { risk: S.profile.risk, horizon: S.profile.horizon_years, scoring: S.scoring });
+  if (youngSkipped) notes.push('noteRecord');
   const corpus = projectCorpus({
     type: S.profile.type, amount: S.profile.amount, years: S.profile.horizon_years,
     annualPct: S.profile.expected_return_pct, inflationPct: S.profile.inflation_pct,
@@ -278,8 +280,9 @@ function runSearch() {
 
 function markNames(html, funds) {
   // fund names are proper nouns: mark them so screen readers / tests treat them as names
-  for (const f of funds.slice(0, 1)) {
-    const n = esc(f.name);
+  const names = [...funds.slice(0, 1).map((f) => f.name), ...Object.values(S.meta?.benchmarks || {}).map((b) => b.index)];
+  for (const name of names) {
+    const n = esc(name);
     html = html.split(n).join(`<span class="proper">${n}</span>`);
   }
   return html;
@@ -300,6 +303,7 @@ function renderResults() {
       <span class="tag">${esc(t('yearsN', { n: p.horizon_years }))}</span>
     </div>
     <div class="small">${esc(t('consideredCats'))}: <strong>${esc(R.cats.map(catName).join(', '))}</strong> — ${esc(t('poolSize', { n: R.poolSize }))}</div>
+    <div class="small muted">${esc(t('riskWeighting.' + p.risk))}</div>
     ${R.notes.map((n) => `<p class="warn">${esc(t(n))}</p>`).join('')}
     ${R.top.length < (S.rules.top_n || 10) ? `<p class="warn">${esc(t('fewerFunds', { n: R.top.length }))}</p>` : ''}`;
 
@@ -386,7 +390,9 @@ function closeDetail() {
 }
 
 function renderDetail(d, benchData) {
-  const f = d.fund;
+  // show the same risk-adjusted score and rank as the list the user came from
+  const adj = S.last?.top.find((x) => x.code === d.fund.code);
+  const f = adj ? { ...d.fund, score: adj.score, rank: adj.rank, peers: adj.peers } : d.fund;
   const m = f.metrics;
   const bmeta = f.benchmark ? S.meta.benchmarks[f.benchmark] : null;
   $('#sheet-title').textContent = f.name;
@@ -442,7 +448,7 @@ function renderDetail(d, benchData) {
     lines.unshift({ label: t('thisFund'), color: 'var(--accent)', points: fs });
     lineChart($('#detail-chart'), lines, { fmtY: (v) => '₹' + num(v, v < 100 ? 2 : 0), fmtX: (x) => date(x.toISOString().slice(0, 10)), ariaLabel: t('navChart') });
     $('#detail-legend').innerHTML = `<span><i style="background:var(--accent)"></i>${esc(t('thisFund'))}</span>` +
-      (lines.length > 1 ? `<span><i style="background:var(--bench)"></i>${esc(t('benchRebased', { index: bmeta.index }))}</span>` : '');
+      (lines.length > 1 ? `<span><i style="background:var(--bench)"></i>${t('benchRebased', { index: `<span class="proper">${esc(bmeta.index)}</span>` })}</span>` : '');
   };
   draw('3Y');
   $('#ranges').onclick = (e) => {
@@ -487,6 +493,7 @@ function renderAbout() {
       <li>${esc(t('about.counts', { ranked: M.counts.ranked, universe: M.counts.universe, built: date(M.built_at.slice(0, 10)) }))}</li>
       <li>${esc(t('about.method'))}</li>
       <li>${esc(t('about.na'))}</li>
+      ${S.verified && S.verified.ok ? `<li>${esc(t('about.verified', { n: (S.verified.return_values + S.verified.risk_values + S.verified.percentiles).toLocaleString('en-IN'), date: date(S.verified.checked_at.slice(0, 10)) }))}</li>` : ''}
     </ul>`;
 }
 
@@ -495,7 +502,9 @@ function checkFreshness() {
   if (S.dataError) { b.hidden = false; b.textContent = t('dataMissing'); return; }
   if (S.meta.sample) { b.hidden = false; b.textContent = t('sampleData'); return; }
   const age = (Date.now() - new Date(S.meta.nav_as_of + 'T00:00:00+05:30').getTime()) / 864e5;
+  const macroAge = (Date.now() - new Date(S.meta.macro.inflation.updated_on + 'T00:00:00+05:30').getTime()) / 864e5;
   if (age > 5) { b.hidden = false; b.textContent = t('staleData', { date: date(S.meta.nav_as_of) }); }
+  else if (macroAge > 45) { b.hidden = false; b.textContent = t('staleMacro', { period: S.meta.macro.inflation.period }); }
   else b.hidden = true;
 }
 

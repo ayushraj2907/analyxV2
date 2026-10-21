@@ -2,50 +2,181 @@
   "_about": "Which SEBI categories are considered for each goal and risk level. Edit with care. Category names must match pipeline/categories.py.",
   "goals": {
     "Wealth Creation": {
-      "Conservative": ["Large Cap", "Flexi Cap", "Balanced Advantage"],
-      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Multi Cap"],
-      "Aggressive": ["Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Large & Mid Cap"]
+      "Conservative": [
+        "Large Cap",
+        "Flexi Cap",
+        "Balanced Advantage"
+      ],
+      "Moderate": [
+        "Flexi Cap",
+        "Large Cap",
+        "Large & Mid Cap",
+        "Multi Cap"
+      ],
+      "Aggressive": [
+        "Mid Cap",
+        "Small Cap",
+        "Flexi Cap",
+        "Multi Cap",
+        "Large & Mid Cap"
+      ]
     },
     "Retirement": {
-      "Conservative": ["Large Cap", "Balanced Advantage", "Conservative Hybrid", "Large & Mid Cap"],
-      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Balanced Advantage", "Multi Cap"],
-      "Aggressive": ["Mid Cap", "Flexi Cap", "Large & Mid Cap", "Multi Cap", "Small Cap"]
+      "Conservative": [
+        "Large Cap",
+        "Balanced Advantage",
+        "Conservative Hybrid",
+        "Large & Mid Cap"
+      ],
+      "Moderate": [
+        "Flexi Cap",
+        "Large Cap",
+        "Large & Mid Cap",
+        "Balanced Advantage",
+        "Multi Cap"
+      ],
+      "Aggressive": [
+        "Mid Cap",
+        "Flexi Cap",
+        "Large & Mid Cap",
+        "Multi Cap",
+        "Small Cap"
+      ]
     },
     "Child Education": {
-      "Conservative": ["Large Cap", "Flexi Cap", "Balanced Advantage", "Conservative Hybrid"],
-      "Moderate": ["Flexi Cap", "Large Cap", "Large & Mid Cap", "Balanced Advantage"],
-      "Aggressive": ["Mid Cap", "Flexi Cap", "Large & Mid Cap", "Multi Cap"]
+      "Conservative": [
+        "Large Cap",
+        "Flexi Cap",
+        "Balanced Advantage",
+        "Conservative Hybrid"
+      ],
+      "Moderate": [
+        "Flexi Cap",
+        "Large Cap",
+        "Large & Mid Cap",
+        "Balanced Advantage"
+      ],
+      "Aggressive": [
+        "Mid Cap",
+        "Flexi Cap",
+        "Large & Mid Cap",
+        "Multi Cap"
+      ]
     },
     "Tax Saving": {
-      "Conservative": ["ELSS"],
-      "Moderate": ["ELSS"],
-      "Aggressive": ["ELSS"]
+      "Conservative": [
+        "ELSS"
+      ],
+      "Moderate": [
+        "ELSS"
+      ],
+      "Aggressive": [
+        "ELSS"
+      ]
     },
     "Emergency Fund": {
-      "Conservative": ["Liquid", "Overnight"],
-      "Moderate": ["Liquid", "Overnight", "Ultra Short Duration"],
-      "Aggressive": ["Liquid", "Ultra Short Duration"]
+      "Conservative": [
+        "Liquid",
+        "Overnight"
+      ],
+      "Moderate": [
+        "Liquid",
+        "Overnight",
+        "Ultra Short Duration"
+      ],
+      "Aggressive": [
+        "Liquid",
+        "Ultra Short Duration"
+      ]
     },
     "Short Term": {
-      "Conservative": ["Liquid", "Ultra Short Duration", "Low Duration"],
-      "Moderate": ["Low Duration", "Short Duration", "Ultra Short Duration"],
-      "Aggressive": ["Short Duration", "Low Duration", "Corporate Bond", "Banking and PSU"]
+      "Conservative": [
+        "Liquid",
+        "Ultra Short Duration",
+        "Low Duration"
+      ],
+      "Moderate": [
+        "Low Duration",
+        "Short Duration",
+        "Ultra Short Duration"
+      ],
+      "Aggressive": [
+        "Short Duration",
+        "Low Duration",
+        "Corporate Bond",
+        "Banking and PSU"
+      ]
     }
   },
   "age_55_plus": {
     "_about": "Fixed 55+ rule: drop mid/small cap for everyone; conservative investors also drop other pure-equity categories and get hybrids instead. Tax Saving stays ELSS (the only tax-saving category).",
-    "remove_always": ["Small Cap", "Mid Cap"],
-    "remove_if_conservative": ["Flexi Cap", "Large & Mid Cap", "Multi Cap"],
-    "add_if_conservative": ["Balanced Advantage", "Conservative Hybrid"],
-    "fallback": ["Balanced Advantage", "Conservative Hybrid", "Large Cap"],
-    "exempt_goals": ["Tax Saving", "Emergency Fund", "Short Term"]
+    "remove_always": [
+      "Small Cap",
+      "Mid Cap"
+    ],
+    "remove_if_conservative": [
+      "Flexi Cap",
+      "Large & Mid Cap",
+      "Multi Cap"
+    ],
+    "add_if_conservative": [
+      "Balanced Advantage",
+      "Conservative Hybrid"
+    ],
+    "fallback": [
+      "Balanced Advantage",
+      "Conservative Hybrid",
+      "Large Cap"
+    ],
+    "exempt_goals": [
+      "Tax Saving",
+      "Emergency Fund",
+      "Short Term"
+    ]
   },
   "horizon": {
     "_about": "Short horizons override the goal table (except Tax Saving, which shows a lock-in warning instead).",
-    "max_1_year": ["Liquid", "Overnight"],
-    "max_3_years": ["Liquid", "Ultra Short Duration", "Low Duration", "Short Duration"],
-    "exempt_goals": ["Tax Saving", "Emergency Fund"]
+    "max_1_year": [
+      "Liquid",
+      "Overnight"
+    ],
+    "max_3_years": [
+      "Liquid",
+      "Ultra Short Duration",
+      "Low Duration",
+      "Short Duration"
+    ],
+    "exempt_goals": [
+      "Tax Saving",
+      "Emergency Fund"
+    ],
+    "max_5_years": {
+      "_about": "4-5 year time frames: too short for small and mid caps.",
+      "remove": [
+        "Small Cap",
+        "Mid Cap"
+      ],
+      "add": [
+        "Balanced Advantage"
+      ]
+    }
   },
   "top_n": 10,
-  "max_per_fund_house": 2
+  "max_per_fund_house": 2,
+  "age_46_55": {
+    "_about": "Ages 46-55: no small caps (except Tax Saving / debt goals).",
+    "remove": [
+      "Small Cap"
+    ],
+    "exempt_goals": [
+      "Tax Saving",
+      "Emergency Fund",
+      "Short Term"
+    ]
+  },
+  "min_track_record_years": {
+    "_about": "For equity and hybrid categories when the time frame is 5+ years, only funds with at least this many years of history are recommended (falls back to younger funds only if too few qualify).",
+    "equity_long_term": 5
+  },
+  "max_per_category_min": 3
 }

@@ -6,7 +6,7 @@ const SHELL = [
   './', 'index.html', 'css/app.css', 'manifest.webmanifest',
   'js/app.js', 'js/i18n.js', 'js/recommend.js', 'js/parse.js', 'js/speech.js', 'js/chart.js', 'js/explain.js',
   'i18n/en.json', 'i18n/hi.json', 'icons/icon-192.png', 'icons/icon-512.png',
-  'config/profile_rules.json', 'config/app_defaults.json',
+  'config/profile_rules.json', 'config/app_defaults.json', 'config/scoring.json',
   'data/meta.json', 'data/funds.json', 'data/benchmarks.json',
 ];
 

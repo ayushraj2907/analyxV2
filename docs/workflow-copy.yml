@@ -38,13 +38,15 @@ jobs:
       - name: Restore NAV history cache
         uses: actions/cache@v4
         with:
-          path: .cache/history
+          path: |
+            .cache/history
+            .cache/amfi
           key: nav-history-${{ github.run_id }}
           restore-keys: nav-history-
 
       - name: Unit tests (formulas, parsing, no hardcoded numbers)
         run: |
-          pip install --quiet pytest
+          pip install --quiet pytest pandas numpy
           python -m pytest -q tests/test_pipeline.py
           node --test tests/js/app.test.mjs
 
@@ -56,6 +58,12 @@ jobs:
 
       - name: Check built data (list and detail identical, sources present)
         run: SITE_DIR=_site python -m pytest -q tests/test_pipeline.py -k "identical or source"
+
+      - name: Independent check of every number against AMFI's official history
+        run: python tests/verify_independent.py _site
+
+      - name: Check every investor profile's recommendations
+        run: node tests/js/verify_profiles.mjs _site
 
       - uses: actions/upload-pages-artifact@v3
         with:

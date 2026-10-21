@@ -99,7 +99,7 @@
   "rankInCat": "#{rank} of {peers} in {cat}",
   "navOn": "NAV ₹{nav} on {date}",
   "whyRank": "Why this rank?",
-  "whyRankHelp": "Each bar shows how this fund compares with others in its category (100 = best). The score combines them using the weights in config/scoring.json.",
+  "whyRankHelp": "Each bar shows how this fund compares with others in its category (100 = best). Your risk level decides how much each bar counts.",
   "details": "Details & chart",
   "dataMissing": "Fund data hasn't been built yet. If you run this site, open the Actions tab on GitHub and run “Update data and publish”.",
   "enterAmount": "Please enter an amount of at least ₹100.",
@@ -217,5 +217,13 @@
   "ms.return_5y": "5Y a year",
   "ms.sharpe": "Sharpe",
   "ms.max_drawdown_3y": "Worst fall 3Y",
-  "ms.std_dev": "Volatility"
+  "ms.std_dev": "Volatility",
+  "note46": "Age 46–55: small cap funds are left out.",
+  "noteH5": "A time frame of 5 years or less is short for small and mid caps, so they are left out and balanced advantage funds are added.",
+  "noteRecord": "For long-term equity goals, only funds with at least 5 years of history are shown, so a short lucky run can't top the list.",
+  "riskWeighting.Conservative": "Because you chose low risk, funds that fell least and moved most steadily count for more.",
+  "riskWeighting.Moderate": "Returns and risk are weighed evenly for medium risk.",
+  "riskWeighting.Aggressive": "Because you chose high risk, long-term growth and alpha count for more than small falls.",
+  "staleMacro": "The inflation figure used is from {period} and may be out of date.",
+  "about.verified": "Every published figure ({n} of them) was recomputed independently and checked against AMFI's official NAV history on {date}. If any figure disagrees, the nightly update is not published."
 }

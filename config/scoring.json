@@ -10,6 +10,42 @@
     "consistency": 10,
     "std_dev": 5
   },
-  "lower_is_better": ["max_drawdown_3y", "std_dev"],
-  "min_history_years": 3
+  "lower_is_better": [
+    "max_drawdown_3y",
+    "std_dev"
+  ],
+  "min_history_years": 3,
+  "_about_risk": "The app re-scores funds for each risk level using these weights on the same category percentiles. Low risk favours small falls and steady returns; high risk favours growth.",
+  "risk_weights": {
+    "Conservative": {
+      "return_3y": 10,
+      "return_5y": 10,
+      "sharpe": 15,
+      "sortino": 20,
+      "alpha": 5,
+      "max_drawdown_3y": 20,
+      "consistency": 10,
+      "std_dev": 10
+    },
+    "Moderate": {
+      "return_3y": 20,
+      "return_5y": 15,
+      "sharpe": 15,
+      "sortino": 10,
+      "alpha": 10,
+      "max_drawdown_3y": 10,
+      "consistency": 10,
+      "std_dev": 5
+    },
+    "Aggressive": {
+      "return_3y": 25,
+      "return_5y": 20,
+      "sharpe": 10,
+      "sortino": 5,
+      "alpha": 20,
+      "max_drawdown_3y": 5,
+      "consistency": 10,
+      "std_dev": 5
+    }
+  }
 }
